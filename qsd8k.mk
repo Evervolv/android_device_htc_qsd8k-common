@@ -96,6 +96,15 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.supplicant_scan_interval=45
 
 #
+# Qcom Properties
+#
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    com.qc.hardware=1 \
+    dev.pm.dyn_samplingrate=1 \
+    ro.vendor.extension_library=/system/lib/libqc-opt.so
+
+#
 # Permissions
 #
 
