@@ -96,13 +96,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.supplicant_scan_interval=45
 
 #
-# Qcom Properties
+# Qcom
 #
 
+# Properties
 PRODUCT_PROPERTY_OVERRIDES += \
     com.qc.hardware=1 \
     dev.pm.dyn_samplingrate=1 \
     ro.vendor.extension_library=/system/lib/libqc-opt.so
+
+# Init post-boot script
+PRODUCT_COPY_FILES += \
+    device/htc/qsd8k-common/init.qcom.post_boot.sh:system/etc/init.qcom.post_boot.sh
 
 #
 # Permissions
