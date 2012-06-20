@@ -24,6 +24,10 @@ PRODUCT_AAPT_PREF_CONFIG := hdpi
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += device/htc/qsd8k-common/overlay
 
+# Prebuilt
+PRODUCT_COPY_FILES += \
+    device/htc/qsd8k-common/libOmxVidEnc.so:system/lib/libOmxVidEnc.so
+
 #
 # Required Packages
 #
