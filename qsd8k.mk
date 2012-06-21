@@ -90,6 +90,15 @@ include frameworks/base/build/phone-hdpi-512-dalvik-heap.mk
 PRODUCT_TAGS += dalvik.gc.type-precise
 
 #
+# Camera (video recording)
+#
+
+# Properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.camcorder.disablemeta=1 \
+    rw.media.record.hasb=0
+
+#
 # Wifi
 #
 
