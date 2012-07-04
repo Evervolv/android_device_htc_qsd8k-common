@@ -18,6 +18,10 @@ case "$target" in
         # CpuGovernorService
         chown system /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
         chown system /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
+        # /system/lib/libqct-opt JNI native will write
+        # mfreq to set CPU freq to max for performance
+        chown root.system /sys/devices/system/cpu/mfreq
+        chmod 220 /sys/devices/system/cpu/mfreq
         # Ksm
         echo 3000 > /sys/kernel/mm/ksm/sleep_millisecs
         echo 256 > /sys/kernel/mm/ksm/pages_to_scan
