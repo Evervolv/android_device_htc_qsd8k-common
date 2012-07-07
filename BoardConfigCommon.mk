@@ -30,8 +30,8 @@ TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 ARCH_ARM_HAVE_TLS_REGISTER := true
 
-# Scorpion
-TARGET_USE_SCORPION_BIONIC_OPTIMIZATION := true
+# Bionic optimizations
+TARGET_USE_LINARO_STRING_ROUTINES := true
 
 # Headers
 TARGET_SPECIFIC_HEADER_PATH := device/htc/qsd8k-common/include
