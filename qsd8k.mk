@@ -87,9 +87,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.dexopt-flags=m=y \
     dalvik.vm.checkjni=false
 
-# Default heap settings for 512mb device
-include frameworks/base/build/phone-hdpi-512-dalvik-heap.mk
-
 # We have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
