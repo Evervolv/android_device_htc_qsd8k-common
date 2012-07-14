@@ -87,6 +87,9 @@ BOARD_ADRENO_AVOID_EXTERNAL_TEXTURE := true
 # Webkit
 TARGET_FORCE_CPU_UPLOAD := true
 
+# Legacy ril
+COMMON_GLOBAL_CFLAGS += -DRIL_VERSION_2_SUPPORT
+
 # Kernel directory
 TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
 
