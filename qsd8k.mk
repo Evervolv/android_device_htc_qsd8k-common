@@ -31,7 +31,7 @@ PRODUCT_COPY_FILES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-    libaudioutils \
+    audio.usb.default \
     audio.a2dp.default \
     audio.primary.qsd8k \
     audio_policy.qsd8k
