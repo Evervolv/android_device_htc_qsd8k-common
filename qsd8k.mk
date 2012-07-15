@@ -21,10 +21,6 @@ PRODUCT_LOCALES := en
 PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
-# Prebuilt
-PRODUCT_COPY_FILES += \
-    device/htc/qsd8k-common/libOmxVidEnc.so:system/lib/libOmxVidEnc.so
-
 #
 # Required Packages
 #
@@ -49,9 +45,9 @@ PRODUCT_PACKAGES += \
 # Omx
 PRODUCT_PACKAGES += \
     libOmxCore \
-    libOmxVidEnc \
     libOmxVdec \
     libstagefrighthw
+#    libOmxVidEnc \
 
 # Misc
 PRODUCT_PACKAGES += \
@@ -138,3 +134,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.distict.xml \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml
+
+# Proprietary blobs
+$(call inherit-product-if-exists, vendor/htc/qsd8k-common/qsd8k-vendor.mk)
