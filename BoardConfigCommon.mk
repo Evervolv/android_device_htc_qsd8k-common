@@ -73,12 +73,10 @@ BOARD_EGL_CFG := device/htc/qsd8k-common/egl.cfg
 USE_OPENGL_RENDERER := true
 # We only have 2 buffers
 TARGET_DISABLE_TRIPLE_BUFFERING := true
-COMMON_GLOBAL_CFLAGS += -DMISSING_GRALLOC_BUFFERS
-# Debuging egl
-#COMMON_GLOBAL_CFLAGS += -DEGL_TRACE
 # Legacy
 TARGET_USES_MDP3 := true
 TARGET_USES_PMEM := true
+BOARD_NEEDS_MEMORYHEAPPMEM := true
 
 # Hacks for legacy mdp drivers
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET  := true
@@ -92,6 +90,3 @@ COMMON_GLOBAL_CFLAGS += -DRIL_VERSION_2_SUPPORT
 
 # Kernel directory
 TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
-
-# Common
-TARGET_RELEASETOOLS_EXTENSIONS := device/htc/common
