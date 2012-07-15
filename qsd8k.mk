@@ -21,6 +21,10 @@ PRODUCT_LOCALES := en
 PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
+# Configs
+PRODUCT_COPY_FILES += \
+    device/htc/qsd8k-common/audio_policy.conf:system/etc/audio_policy.conf
+
 #
 # Required Packages
 #
