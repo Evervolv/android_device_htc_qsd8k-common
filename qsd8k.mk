@@ -103,6 +103,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Wifi
 #
 
+# Firmware
+$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4329/device-bcm.mk)
+
 # Properties
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
