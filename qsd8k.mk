@@ -23,6 +23,7 @@ PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 # Configs
 PRODUCT_COPY_FILES += \
+    device/htc/qsd8k-common/media_codecs.xml:system/etc/media_codecs.xml \
     device/htc/qsd8k-common/audio_policy.conf:system/etc/audio_policy.conf
 
 #
