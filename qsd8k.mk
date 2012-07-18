@@ -54,6 +54,10 @@ PRODUCT_PACKAGES += \
     libstagefrighthw
 #    libOmxVidEnc \
 
+# Filesystem management tools
+PRODUCT_PACKAGES += \
+    make_ext4fs
+
 # Misc
 PRODUCT_PACKAGES += \
     com.android.future.usb.accessory
