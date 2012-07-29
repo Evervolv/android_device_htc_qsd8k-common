@@ -62,6 +62,7 @@ PRODUCT_PACKAGES += \
 
 # Misc
 PRODUCT_PACKAGES += \
+    power.qsd8k \
     com.android.future.usb.accessory
 
 #
