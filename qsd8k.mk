@@ -70,13 +70,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     debug.composition.type=mdp \
-    debug.gr.numframebuffers=2
-
-# dirty_regions: "false" to disable partial invalidates, override if enabletr=true
-PRODUCT_PROPERTY_OVERRIDES += \
+    debug.gr.numframebuffers=2 \
     hwui.render_dirty_regions=false \
+    debug.sf.no_hw_vsync=1 \
     hwui.disable_vsync=true \
-    hwui.print_config=choice \
     debug.enabletr=false
 
 #
