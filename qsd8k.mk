@@ -37,15 +37,11 @@ PRODUCT_PACKAGES += \
     audio.primary.qsd8k \
     audio_policy.qsd8k
 
-# Adreno
+# Display
 PRODUCT_PACKAGES += \
     copybit.qsd8k \
     gralloc.qsd8k \
-    hwcomposer.qsd8k \
-    libgenlock \
-    libmemalloc \
-    libtilerenderer \
-    libQcomUI
+    hwcomposer.qsd8k
 
 # Omx
 PRODUCT_PACKAGES += \
