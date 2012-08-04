@@ -41,4 +41,5 @@ struct genlock_lock {
 #define GENLOCK_IOC_RELEASE _IO(GENLOCK_IOC_MAGIC, 4)
 #define GENLOCK_IOC_WAIT _IOW(GENLOCK_IOC_MAGIC, 5,   struct genlock_lock)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define GENLOCK_IOC_DREADLOCK _IOW(GENLOCK_IOC_MAGIC, 6,   struct genlock_lock)
 #endif
