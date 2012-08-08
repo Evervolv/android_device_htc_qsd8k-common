@@ -37,6 +37,11 @@ PRODUCT_PACKAGES += \
     audio.primary.qsd8k \
     audio_policy.qsd8k
 
+# Camera
+PRODUCT_PACKAGES += \
+    camera.qsd8k \
+    LegacyCamera
+
 # Display
 PRODUCT_PACKAGES += \
     copybit.qsd8k \
