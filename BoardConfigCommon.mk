@@ -75,16 +75,9 @@ BOARD_EGL_CFG := device/htc/qsd8k-common/egl.cfg
 USE_OPENGL_RENDERER := true
 # We only have 2 buffers
 TARGET_DISABLE_TRIPLE_BUFFERING := true
-# Legacy
-TARGET_USES_MDP3 := true
-TARGET_USES_PMEM := true
 BOARD_NEEDS_MEMORYHEAPPMEM := true
-# Hack for hwc
+TARGET_NO_HW_VSYNC := true
 COMMON_GLOBAL_CFLAGS += -DTARGET_8x50
-
-# Hacks for legacy mdp drivers
-BOARD_ADRENO_DECIDE_TEXTURE_TARGET  := true
-BOARD_ADRENO_AVOID_EXTERNAL_TEXTURE := true
 
 # Webkit
 TARGET_FORCE_CPU_UPLOAD := true
