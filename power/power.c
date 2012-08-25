@@ -21,7 +21,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdlib.h>
 
 #define LOG_TAG "PowerHAL"
 #include <utils/Log.h>
@@ -50,30 +49,38 @@ static void sysfs_write(char *path, char *s)
     close(fd);
 }
 
-static void sysfs_read(char *path, char *s)
+static int sysfs_read(char *path, char *s, size_t l)
 {
     char buf[80];
-    int len;
+    int len = -1;
     int fd = open(path, O_RDONLY);
 
     if (fd < 0) {
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error opening %s: %s\n", path, buf);
-        return ;
+        return len;
     }
 
-    len = read(fd, s, 1); /* only read first value */
+    do {
+        len = read(fd, s, l);
+    } while (len < 0 && errno == EINTR); // Retry if interrupted
+
     if (len < 0) {
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error reading from %s: %s\n", path, buf);
     }
 
     close(fd);
+    return len;
 }
 
 static void qsd8k_power_init(struct power_module *module)
 {
 }
+
+#define FREQ_BUF_SIZE 8
+static char scaling_max_freq[FREQ_BUF_SIZE]           = "998400";
+static const char scaling_max_freq_def[FREQ_BUF_SIZE] = "998400";
 
 static void qsd8k_power_set_interactive(struct power_module *module, int on)
 {
@@ -81,16 +88,21 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
      * Dynamically change cpu settings depending on screen on/off state
      */
 
-    char buf[] = "9"; /* set default in case read fails */
-    int freq;
+    char buf[FREQ_BUF_SIZE];
+    int len;
 
-    sysfs_read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq", buf);
-    freq = atoi(buf);
+    if (!on) { /* store current max freq so it can be restored */
+        len = sysfs_read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+                              buf, sizeof(buf));
+        if (len > 0)
+            strcpy(scaling_max_freq, buf);
+        else /* set default value on error */
+            strcpy(scaling_max_freq, scaling_max_freq_def);
+    }
 
     /* Reduce max frequency */
-    if (freq > 1) /* Skip if we're oc'd */
-        sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-                on ? "998400" : "614400");
+    sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+                on ? scaling_max_freq : "614400");
 
     /* Increase sampling rate */
     sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate",
