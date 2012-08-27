@@ -73,8 +73,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=mdp \
     debug.gr.numframebuffers=2 \
     hwui.render_dirty_regions=false \
-    debug.sf.no_hw_vsync=1 \
-    hwui.disable_vsync=true \
     debug.enabletr=false
 
 #
