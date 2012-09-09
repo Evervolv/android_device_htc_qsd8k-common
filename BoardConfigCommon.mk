@@ -89,3 +89,7 @@ COMMON_GLOBAL_CFLAGS += -DRIL_VERSION_2_SUPPORT
 
 # Kernel directory
 TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
+# Override kernel toolchain. (4.6 is too unstable)
+ifeq ($(LINARO_BUILD),)
+KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+endif
