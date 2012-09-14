@@ -72,9 +72,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     debug.composition.type=mdp \
     debug.gr.numframebuffers=2 \
-    hwui.render_dirty_regions=false \
-    hwui.disable_vsync=true \
-    debug.enabletr=false
+    hwui.disable_vsync=true
 
 #
 # Dalvik Properties
