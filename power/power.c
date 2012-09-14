@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
- *
- * Modified by:
+ * Copyright (C) 2012 The Evervolv Project
  *      Andrew Sutherland <dr3wsuth3rland@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,6 +80,7 @@ static void qsd8k_power_init(struct power_module *module)
 #define FREQ_BUF_SIZE 8
 static char scaling_max_freq[FREQ_BUF_SIZE]           = "998400";
 static const char scaling_max_freq_def[FREQ_BUF_SIZE] = "998400";
+static char screenoff_max_freq[FREQ_BUF_SIZE]         = "614400";
 
 static void qsd8k_power_set_interactive(struct power_module *module, int on)
 {
@@ -89,20 +89,20 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
      */
 
     char buf[FREQ_BUF_SIZE];
-    int len;
+    int len = -1;
 
     if (!on) { /* store current max freq so it can be restored */
         len = sysfs_read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
                               buf, sizeof(buf));
-        if (len > 0)
+        if (len > 0 && strcmp(buf, screenoff_max_freq) != 0)
             strcpy(scaling_max_freq, buf);
-        else /* set default value on error */
+        else /* set default */
             strcpy(scaling_max_freq, scaling_max_freq_def);
     }
 
     /* Reduce max frequency */
     sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-                on ? scaling_max_freq : "614400");
+                on ? scaling_max_freq : screenoff_max_freq);
 
     /* Increase sampling rate */
     sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate",
