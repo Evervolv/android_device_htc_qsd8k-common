@@ -86,6 +86,10 @@ ENABLE_WEBGL := true
 # Legacy ril
 COMMON_GLOBAL_CFLAGS += -DRIL_VERSION_2_SUPPORT
 
+# Camcorder
+BOARD_USE_OLD_AVC_ENCODER := true
+BOARD_NO_BFRAMES := true
+
 # Kernel directory
 TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
 BUILD_KERNEL := true
