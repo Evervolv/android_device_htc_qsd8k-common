@@ -27,6 +27,18 @@
 #include <hardware/hardware.h>
 #include <hardware/power.h>
 
+#define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/ondemand/boostpulse"
+#define FREQ_BUF_SIZE 10
+static char scaling_max_freq[FREQ_BUF_SIZE]   = "998400";
+static char screenoff_max_freq[FREQ_BUF_SIZE] = "614400";
+
+struct qsd8k_power_module {
+    struct power_module base;
+    pthread_mutex_t lock;
+    int boostpulse_fd;
+    int boostpulse_warned;
+};
+
 static void sysfs_write(char *path, char *s)
 {
     char buf[80];
@@ -61,26 +73,45 @@ static int sysfs_read(char *path, char *s, size_t l)
     }
 
     do {
-        len = read(fd, s, l);
+        len = read(fd, s, l - 1);
     } while (len < 0 && errno == EINTR); // Retry if interrupted
 
     if (len < 0) {
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error reading from %s: %s\n", path, buf);
+    } else {
+        s[len] = '\0';
     }
 
     close(fd);
     return len;
 }
 
+static int boostpulse_open(struct qsd8k_power_module *qsd8k)
+{
+    char buf[80];
+
+    pthread_mutex_lock(&qsd8k->lock);
+
+    if (qsd8k->boostpulse_fd < 0) {
+        qsd8k->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
+
+        if (qsd8k->boostpulse_fd < 0) {
+            if (!qsd8k->boostpulse_warned) {
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
+                qsd8k->boostpulse_warned = 1;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&qsd8k->lock);
+    return qsd8k->boostpulse_fd;
+}
+
 static void qsd8k_power_init(struct power_module *module)
 {
 }
-
-#define FREQ_BUF_SIZE 8
-static char scaling_max_freq[FREQ_BUF_SIZE]           = "998400";
-static const char scaling_max_freq_def[FREQ_BUF_SIZE] = "998400";
-static char screenoff_max_freq[FREQ_BUF_SIZE]         = "614400";
 
 static void qsd8k_power_set_interactive(struct power_module *module, int on)
 {
@@ -96,8 +127,6 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
                               buf, sizeof(buf));
         if (len > 0 && strcmp(buf, screenoff_max_freq) != 0)
             strcpy(scaling_max_freq, buf);
-        else /* set default */
-            strcpy(scaling_max_freq, scaling_max_freq_def);
     }
 
     /* Reduce max frequency */
@@ -114,20 +143,64 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
 
 }
 
+static void qsd8k_power_hint(struct power_module *module, power_hint_t hint,
+                            void *data)
+{
+    struct qsd8k_power_module *qsd8k = (struct qsd8k_power_module *) module;
+    char buf[80];
+    int len;
+    int duration = 1;
+
+    switch (hint) {
+    case POWER_HINT_INTERACTION:
+    case POWER_HINT_CPU_BOOST:
+        if (boostpulse_open(qsd8k) >= 0) {
+            if (data != NULL)
+                duration = (int) data;
+            snprintf(buf, sizeof(buf), "%d", duration);
+            len = write(qsd8k->boostpulse_fd, buf, strlen(buf));
+            if (len < 0) {
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
+                pthread_mutex_lock(&qsd8k->lock);
+                close(qsd8k->boostpulse_fd);
+                qsd8k->boostpulse_fd = -1;
+                qsd8k->boostpulse_warned = 0;
+                pthread_mutex_unlock(&qsd8k->lock);
+            }
+        }
+        break;
+
+    case POWER_HINT_VSYNC:
+        break;
+
+    default:
+        break;
+    }
+}
+
 static struct hw_module_methods_t power_module_methods = {
     .open = NULL,
 };
 
-struct power_module HAL_MODULE_INFO_SYM = {
-    .common = {
-        .tag = HARDWARE_MODULE_TAG,
-        .module_api_version = POWER_MODULE_API_VERSION_0_1,
-        .hal_api_version = HARDWARE_HAL_API_VERSION,
-        .id = POWER_HARDWARE_MODULE_ID,
-        .name = "QSD8x50 Power HAL",
-        .author = "The Android Open Source Project",
-        .methods = &power_module_methods,
+struct qsd8k_power_module HAL_MODULE_INFO_SYM = {
+    base: {
+        common: {
+            tag: HARDWARE_MODULE_TAG,
+            module_api_version: POWER_MODULE_API_VERSION_0_2,
+            hal_api_version: HARDWARE_HAL_API_VERSION,
+            id: POWER_HARDWARE_MODULE_ID,
+            name: "QSD8x50 Power HAL",
+            author: "The Evervolv Project",
+            methods: &power_module_methods,
+        },
+
+        init: qsd8k_power_init,
+        setInteractive: qsd8k_power_set_interactive,
+        powerHint: qsd8k_power_hint,
     },
-    .init = qsd8k_power_init,
-    .setInteractive = qsd8k_power_set_interactive,
+
+    lock: PTHREAD_MUTEX_INITIALIZER,
+    boostpulse_fd: -1,
+    boostpulse_warned: 0,
 };
