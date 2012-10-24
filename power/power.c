@@ -27,8 +27,10 @@
 #include <hardware/hardware.h>
 #include <hardware/power.h>
 
-#define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/ondemand/boostpulse"
+#define BOOSTPULSE_ONDEMAND "/sys/devices/system/cpu/cpufreq/ondemand/boostpulse"
+#define BOOSTPULSE_INTERACTIVE "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
 #define FREQ_BUF_SIZE 10
+
 static char scaling_max_freq[FREQ_BUF_SIZE]   = "998400";
 static char screenoff_max_freq[FREQ_BUF_SIZE] = "614400";
 
@@ -73,35 +75,53 @@ static int sysfs_read(char *path, char *s, size_t l)
     }
 
     do {
-        len = read(fd, s, l - 1);
+        len = read(fd, s, l);
     } while (len < 0 && errno == EINTR); // Retry if interrupted
 
     if (len < 0) {
         strerror_r(errno, buf, sizeof(buf));
         ALOGE("Error reading from %s: %s\n", path, buf);
     } else {
-        s[len] = '\0';
+        s[len - 1] = '\0'; /* Kill the newline */
     }
 
     close(fd);
     return len;
 }
 
+static int get_scaling_governor(char *governor, size_t size)
+{
+
+    if (sysfs_read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
+             governor, size) < 0)
+        return -1;
+
+    return 0;
+}
+
 static int boostpulse_open(struct qsd8k_power_module *qsd8k)
 {
     char buf[80];
+    char governor[80];
 
     pthread_mutex_lock(&qsd8k->lock);
 
     if (qsd8k->boostpulse_fd < 0) {
-        qsd8k->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
+        if (get_scaling_governor(governor, sizeof(governor)) < 0) {
+            ALOGE("Can't read scaling governor.");
+            qsd8k->boostpulse_warned = 1;
+        } else {
+            if (strncmp(governor, "ondemand", 8) == 0)
+                qsd8k->boostpulse_fd = open(BOOSTPULSE_ONDEMAND, O_WRONLY);
+            else if (strncmp(governor, "interactive", 11) == 0)
+                qsd8k->boostpulse_fd = open(BOOSTPULSE_INTERACTIVE, O_WRONLY);
 
-        if (qsd8k->boostpulse_fd < 0) {
-            if (!qsd8k->boostpulse_warned) {
+            if (qsd8k->boostpulse_fd < 0 && !qsd8k->boostpulse_warned) {
                 strerror_r(errno, buf, sizeof(buf));
-                ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
+                ALOGE("Error opening %s boostpulse interface: %s\n", governor, buf);
                 qsd8k->boostpulse_warned = 1;
-            }
+            } else if (qsd8k->boostpulse_fd > 0)
+                ALOGD("Opened %s boostpulse interface", governor);
         }
     }
 
@@ -163,7 +183,7 @@ static void qsd8k_power_hint(struct power_module *module, power_hint_t hint,
             len = write(qsd8k->boostpulse_fd, buf, strlen(buf));
             if (len < 0) {
                 strerror_r(errno, buf, sizeof(buf));
-                ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
+                ALOGE("Error writing to boostpulse: %s\n", buf);
                 pthread_mutex_lock(&qsd8k->lock);
                 close(qsd8k->boostpulse_fd);
                 qsd8k->boostpulse_fd = -1;
