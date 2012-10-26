@@ -141,6 +141,8 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
 
     char buf[FREQ_BUF_SIZE];
     int len = -1;
+    char governor[80];
+    struct qsd8k_power_module *qsd8k = (struct qsd8k_power_module *) module;
 
     if (!on) { /* store current max freq so it can be restored */
         len = sysfs_read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
@@ -155,9 +157,15 @@ static void qsd8k_power_set_interactive(struct power_module *module, int on)
     sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
                 on ? scaling_max_freq : screenoff_max_freq);
 
-    /* Increase sampling rate */
-    sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate",
-                on ? "50000" : "500000");
+    if (get_scaling_governor(governor, sizeof(governor)) < 0) {
+        ALOGE("Can't read scaling governor.");
+        qsd8k->boostpulse_warned = 1;
+    } else {
+        /* Increase sampling rate for ondemand */
+        if (strncmp(governor, "ondemand", 8) == 0)
+            sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate",
+                        on ? "50000" : "500000");
+    }
 
     /* Increase ksm sleep interval */
     sysfs_write("/sys/kernel/mm/ksm/sleep_millisecs",
