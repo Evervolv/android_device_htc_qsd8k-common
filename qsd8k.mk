@@ -26,6 +26,10 @@ PRODUCT_COPY_FILES += \
     device/htc/qsd8k-common/media_codecs.xml:system/etc/media_codecs.xml \
     device/htc/qsd8k-common/audio_policy.conf:system/etc/audio_policy.conf
 
+# Misc
+PRODUCT_COPY_FILES += \
+    device/htc/qsd8k-common/init.power.rc:root/init.power.rc
+
 #
 # Required Packages
 #
