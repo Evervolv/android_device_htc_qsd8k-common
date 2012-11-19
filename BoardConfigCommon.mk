@@ -75,6 +75,7 @@ BOARD_VENDOR_QCOM_AMSS_VERSION := 3200
 # Hardware rendering
 BOARD_EGL_CFG := device/htc/qsd8k-common/egl.cfg
 USE_OPENGL_RENDERER := true
+BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
 # We only have 2 buffers
 TARGET_DISABLE_TRIPLE_BUFFERING := true
 BOARD_NEEDS_MEMORYHEAPPMEM := true
