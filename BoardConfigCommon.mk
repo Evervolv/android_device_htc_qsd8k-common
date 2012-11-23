@@ -67,9 +67,9 @@ BOARD_HAVE_BLUETOOTH_BCM := true
 #BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
 
 # Qcom
-BOARD_USES_QCOM_HARDWARE := true
+#BOARD_USES_QCOM_HARDWARE := true
 BOARD_VENDOR_QCOM_AMSS_VERSION := 3200
-COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
+#COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
 
 # Hardware rendering
 BOARD_EGL_CFG := device/htc/qsd8k-common/egl.cfg
@@ -95,9 +95,9 @@ BOARD_NO_BFRAMES := true
 TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
 BUILD_KERNEL := true
 
-BOARD_USES_LEGACY_CAMERA := true
+#BOARD_USES_LEGACY_CAMERA := true
 
 # Override kernel toolchain. (4.6 is too unstable)
 ifeq ($(LINARO_BUILD),)
-KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+#KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 endif
