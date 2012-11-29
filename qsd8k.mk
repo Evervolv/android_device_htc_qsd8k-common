@@ -30,6 +30,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/htc/qsd8k-common/init.power.rc:root/init.power.rc
 
+
+# A2SD
+include device/htc/qsd8k-common/apps2sd/apps2sd.mk
+
 #
 # Required Packages
 #

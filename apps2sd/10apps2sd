@@ -1,0 +1,160 @@
+#!/system/bin/sh
+#
+# Copyright (C) 2012 The Evervolv Project
+#
+#     Andrew Sutherland <dr3wsuth3rland@gmail.com>
+#     Thu Sep 20 22:39:13 CDT 2012
+#
+
+#
+# @GLOBALS
+#
+
+if [ -z "$SD_EXT_DIRECTORY" ]; then SD_EXT_DIRECTORY=/sd-ext; fi
+bb=/system/xbin/busybox
+logI="log -p i -t apps2sd"
+
+#
+# @FUNCITONS
+#
+
+init_directory () {
+    local folder=$1
+    local owner=$2
+    local perms=$3
+    test $folder || return 1
+    test $owner  || owner=system
+    test $perms  || perms=771
+    # create directory
+    if [ ! -d $SD_EXT_DIRECTORY/$folder ]; then
+        $bb mkdir -p $SD_EXT_DIRECTORY/$folder
+        $bb chown $owner:$owner $SD_EXT_DIRECTORY/$folder
+        $bb chmod $perms $SD_EXT_DIRECTORY/$folder
+        $logI "Created directory $SD_EXT_DIRECTORY/$folder"
+    fi
+}
+
+move_content () {
+    local folder=$1
+    test $folder || return 1
+    local numfiles=$($bb ls /data/$folder | $bb wc -l)
+    if [ $numfiles -gt 0 ]; then
+        $logI "Copying content from /data/$folder to $SD_EXT_DIRECTORY/$folder"
+        $bb cp -a /data/$folder/* $SD_EXT_DIRECTORY/$folder/
+        $logI "Copied $numfiles files/dirs from /data/$folder"
+        $logI "Removing apks in /data/$folder to free up space"
+        $bb rm -rf /data/$folder/*
+    fi
+}
+
+mount_directory () {
+    local folder=$1
+    test $folder || return 1
+    $logI "Bind mounting /data/$folder to $SD_EXT_DIRECTORY/$folder"
+    $bb mount -o bind $SD_EXT_DIRECTORY/$folder /data/$folder
+}
+
+#
+# @MAIN
+#
+
+# make sure $SD_EXT_DIRECTORY is actually mounted
+if ! awk -vDIR="$SD_EXT_DIRECTORY" '$2 == DIR { exit 1; }' /proc/mounts ; then
+
+    # for apks
+    if [ -f $SD_EXT_DIRECTORY/.a2sd ]; then
+        for ii in app app-private; do
+            init_directory $ii
+            move_content $ii
+            mount_directory $ii
+        done
+        # app-asec is separate
+        init_directory app-asec root 700 # special perms here
+        move_content app-asec
+        mount_directory app-asec
+        $logI "A2SD setup complete"
+    fi
+
+    # for app data
+    if [ -f $SD_EXT_DIRECTORY/.ad2sd ]; then
+        init_directory data
+        move_content data
+        mount_directory data
+        $logI "AD2SD setup complete"
+    else
+        # Nuke data: leaving this will likely cause issues
+        if [ -d $SD_EXT_DIRECTORY/data ]; then
+            $bb rm -rf $SD_EXT_DIRECTORY/data
+        fi
+    fi
+
+    # for dalvik-cache
+    if [ -f $SD_EXT_DIRECTORY/.dc2sd ]; then
+        init_directory dalvik-cache
+        # nuke the cache
+        dcfiles=$($bb ls /data/dalvik-cache | $bb wc -l)
+        if [ $dcfiles -gt 0 ]; then
+            $logI "Nuking /data/dalvik-cache to free up space"
+            $bb rm -rf /data/dalvik-cache/*
+        fi;
+        # this is how i am dealing with wipes
+        # if you just wiped obviously this flag wont be there so we know we should also
+        # clean the dalvik-cache folder on the sdcard so it can be rebuilt properly
+        if [ ! -f /data/.dc2sd ]; then
+            $logI "This is a first boot...nuking $SD_EXT_DIRECTORY/dalvik-cache"
+            $bb rm -rf $SD_EXT_DIRECTORY/dalvik-cache/*
+            $bb echo "x" > /data/.dc2sd
+            $bb chmod 644 /data/.dc2sd
+        fi
+        mount_directory dalvik-cache
+        $logI "Finished setting up dalvik-cache on $SD_EXT_DIRECTORY"
+    else
+        # remove since its not being used
+        if [ -d $SD_EXT_DIRECTORY/dalvik-cache ]; then
+            $bb rm -rf $SD_EXT_DIRECTORY/dalvik-cache
+        fi
+    fi
+    #end dalvik-cache
+
+    #experimental xdata
+    if [ -f $SD_EXT_DIRECTORY/.xdata ]; then
+        # create directory if needed
+        if [ ! -d $SD_EXT_DIRECTORY/xdata ]; then
+            $bb mkdir $SD_EXT_DIRECTORY/xdata;
+            $bb chown 1000:1000 $SD_EXT_DIRECTORY/xdata;
+            $bb chmod 771 $SD_EXT_DIRECTORY/xdata;
+            $logI "$SD_EXT_DIRECTORY/xdata created";
+        fi;
+        # move files
+        if [ ! -f $SD_EXT_DIRECTORY/xdata/.nocp ]; then
+            $logI "Wiping $SD_EXT_DIRECTORY/xdata";
+            $bb rm -rf $SD_EXT_DIRECTORY/xdata/*;
+            $bb echo "x" > $SD_EXT_DIRECTORY/xdata/.nocp;
+            $logI "Cloning /data to $SD_EXT_DIRECTORY/xdata";
+            $bb cp -a /data/* $SD_EXT_DIRECTORY/xdata/;
+            #$bb rm -r /data/*;
+        fi;
+        # dont mess with the old a2sd dirs just copy the apks into the new one
+        for ll in app app-private data; do
+            if [ -d $SD_EXT_DIRECTORY/$ll ]; then
+                if [ ! -f $SD_EXT_DIRECTORY/xdata/$ll/.nocp ]; then
+                    numfiles=$($bb ls $SD_EXT_DIRECTORY/$ll | $bb wc -l)
+                    if [ $numfiles -gt 0 ]; then
+                        $bb cp -a $SD_EXT_DIRECTORY/$ll/* $SD_EXT_DIRECTORY/xdata/$ll/;
+                        $logI "Copied $numfiles apks from $SD_EXT_DIRECTORY/$ll to $SD_EXT_DIRECTORY/xdata/$ll";
+                        echo "$numfiles" > $SD_EXT_DIRECTORY/xdata/$ll/.nocp;
+                    fi;
+                fi;
+            fi;
+        done;
+        # bind mount the xdata directory to the expected data directory
+        $logI "Bind mounting $SD_EXT_DIRECTORY/xdata/ to /data";
+        $bb mount -o bind $SD_EXT_DIRECTORY/xdata /data;
+        $logI "Done setting up experimental xdata";
+    fi
+    #end experimental xdata
+    #setprops needed by a2sd script
+    setprop a2sd.mountpoint $($bb cat /proc/mounts | $bb grep "$SD_EXT_DIRECTORY" | $bb awk '/^\// {print $1;exit;}')
+else
+    setprop a2sd.mountpoint "none"
+fi
