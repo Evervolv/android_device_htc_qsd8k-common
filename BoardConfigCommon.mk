@@ -18,6 +18,8 @@
 # included in a build is to use PRODUCT_PACKAGES in a product
 # definition file).
 
+DEVICE_PACKAGE_OVERLAYS += device/htc/qsd8k-common/overlay
+
 TARGET_NO_BOOTLOADER := true
 
 # QSD8250
@@ -31,10 +33,8 @@ TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 ARCH_ARM_HAVE_TLS_REGISTER := true
 
-DEVICE_PACKAGE_OVERLAYS += device/htc/qsd8k-common/overlay
-
-# Bionic optimizations
-TARGET_USE_LINARO_STRING_ROUTINES := true
+# Scorpion
+TARGET_USE_SCORPION_BIONIC_OPTIMIZATION := true
 
 # Headers
 TARGET_SPECIFIC_HEADER_PATH := device/htc/qsd8k-common/include
