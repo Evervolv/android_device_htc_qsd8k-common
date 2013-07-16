@@ -105,3 +105,12 @@ BUILD_KERNEL := true
 
 # Override kernel toolchain. (4.6 is too unstable)
 KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3/bin/arm-eabi-
+
+# TWRP
+DEVICE_RESOLUTION := 480x800
+# no kernel support
+TW_NO_SCREEN_BLANK := true
+# decrease size of recoveryimage
+TW_EXCLUDE_ENCRYPTED_BACKUPS := true
+TW_USE_TOOLBOX := true
+TW_EXCLUDE_SUPERSU := true
