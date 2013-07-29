@@ -43,7 +43,7 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    camera.qsd8k
+    #camera.qsd8k
 
 # Display
 PRODUCT_PACKAGES += \
