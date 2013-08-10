@@ -87,6 +87,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.lockprof.threshold=500 \
     dalvik.vm.dexopt-flags=m=y \
+    ro.sys.fw.bg_apps_limit=12 \
     dalvik.vm.checkjni=false
 
 # Default heap settings for 512mb device
