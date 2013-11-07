@@ -79,6 +79,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.gr.numframebuffers=2
 
 #
+# Low Mem
+#
+PRODUCT_PROPERTY_OVERRIDES += ro.config.low_ram=true
+# Disable jit
+PRODUCT_PROPERTY_OVERRIDES += dalvik.vm.jit.codecachesize=0
+
+#
 # Dalvik Properties
 #
 
