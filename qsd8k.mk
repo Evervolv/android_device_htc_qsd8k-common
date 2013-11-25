@@ -76,7 +76,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     debug.hwc.fakevsync=1 \
     debug.composition.type=mdp \
-    ro.bq.gpu_to_cpu_unsupported=1 \
+    ro.zygote.disable_gl_preload=true \
     debug.gr.numframebuffers=2
 
 #
