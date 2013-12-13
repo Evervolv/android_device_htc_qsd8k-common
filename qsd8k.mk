@@ -90,14 +90,6 @@ PRODUCT_PROPERTY_OVERRIDES += dalvik.vm.jit.codecachesize=0
 # Dalvik Properties
 #
 
-# dexop-flags: "v=" n|r|a, "o=" n|v|a|f, "m=y" register map
-# v=verify o=optimize: n=none r=remote a=all f=full v=verified
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.lockprof.threshold=500 \
-    dalvik.vm.dexopt-flags=m=y \
-    ro.sys.fw.bg_apps_limit=12 \
-    dalvik.vm.checkjni=false
-
 # Default heap settings for 512mb device
 include frameworks/native/build/phone-hdpi-512-dalvik-heap.mk
 
