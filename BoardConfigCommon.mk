@@ -104,8 +104,7 @@ TARGET_KERNEL_SOURCE := kernel/htc/qsd8k
 BUILD_KERNEL := true
 
 # Override kernel toolchain. (4.6 is too unstable)
-KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-linux-linaro-4.9/bin/arm-eabi-
-#KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3/bin/arm-eabi-
+KERNEL_TOOLCHAIN_PREFIX:=$(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3/bin/arm-eabi-
 
 # TWRP
 DEVICE_RESOLUTION := 480x800

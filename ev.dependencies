@@ -28,10 +28,5 @@
         "repository": "android_prebuilts_gcc_linux-x86_arm_arm-eabi-4.4.3",
         "target_path": "prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3",
         "dep_type": "toolchain"
-    },
-    {
-        "repository": "android_prebuilts_gcc_linux-x86_arm_arm-linux-linaro-4.9",
-        "target_path": "prebuilts/gcc/linux-x86/arm/arm-linux-linaro-4.9",
-        "dep_type": "toolchain"
     }
 ]
