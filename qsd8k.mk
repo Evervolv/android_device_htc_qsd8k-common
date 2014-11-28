@@ -49,7 +49,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     copybit.qsd8k \
     gralloc.qsd8k \
-    hwcomposer.qsd8k
+    hwcomposer.qsd8k \
+    memtrack.qsd8k
 
 # Omx
 PRODUCT_PACKAGES += \
