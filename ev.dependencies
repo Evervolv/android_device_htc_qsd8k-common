@@ -5,9 +5,10 @@
         "dep_type": "kernel"
     },
     {
-        "repository": "android_hardware_qcom_audio-legacy",
-        "target_path": "hardware/qcom/audio-legacy",
-        "dep_type": "hardware"
+        "repository": "android_hardware_qcom_audio-caf",
+        "target_path": "hardware/qcom/audio-caf",
+        "dep_type": "hardware",
+        "branch": "lollipop-8960"
     },
     {
         "repository": "android_hardware_qcom_display-legacy",
@@ -15,13 +16,13 @@
         "dep_type": "hardware"
     },
     {
-        "repository": "android_hardware_qcom_gps-legacy",
-        "target_path": "hardware/qcom/gps-legacy",
+        "repository": "android_hardware_qcom_media-legacy",
+        "target_path": "hardware/qcom/media-legacy",
         "dep_type": "hardware"
     },
     {
-        "repository": "android_hardware_qcom_media-legacy",
-        "target_path": "hardware/qcom/media-legacy",
+        "repository": "android_hardware_qcom_gps-legacy",
+        "target_path": "hardware/qcom/gps-legacy",
         "dep_type": "hardware"
     },
     {
