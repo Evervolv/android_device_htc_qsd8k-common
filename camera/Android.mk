@@ -18,7 +18,8 @@ LOCAL_SHARED_LIBRARIES := liblog libdl libutils libcamera_client libbinder \
 LOCAL_C_INCLUDES       := frameworks/base/services \
                           frameworks/base/include \
                           hardware/libhardware/include \
-                          hardware/qcom/display-legacy/libgralloc
+                          hardware/qcom/display-legacy/libgralloc \
+                          system/media/camera/include
 
 #Hack to link libcamera
 LOCAL_LDFLAGS          := -Wl,--no-fatal-warnings
